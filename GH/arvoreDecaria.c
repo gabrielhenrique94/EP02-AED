@@ -77,37 +77,38 @@ int alturaArvore(Arvore a){
 /* Funcao auxiliar para retornar a quantidade de nos da subarvore iniciada pelo 
    noh apontado pelo parametro no. */
 int numeroDeNosDaArvoreAux(PontNo no){
-
-  /* COMPLETAR */
-
-  return 0;
+  int i;
+  int contador = 1;
+  for(i = 0 ; i <10 ; i++){
+    if(no->filhos[i] != NULL)
+      contador += numeroDeNosDaArvoreAux(no->filhos[i]);
+  }
+  return contador;
 }
 
 /* Funcao que retorna a quantidade de nos da arvore a, incluindo a raiz.*/
 int numeroDeNosDaArvore(Arvore a){
-
-  /* COMPLETAR */
-
-  return 0;
+  return numeroDeNosDaArvoreAux(a.raiz);
 }
 
 /* Funcao auxiliar para retornar a quantidade de numeros da subarvore iniciada 
    pelo noh apontado pelo parametro no. A contagem de numeros corresponde a 
    quantidade de nos com o campo fimDoNumero=true*/
 int quantidadeDeNumerosDaArvoreAux(PontNo no){
-
-  /* COMPLETAR */
-
-  return 0;
+  int i;
+  int contador = 0;
+  if(no->fimDoNumero) contador++;
+  for(i = 0 ; i <10 ; i++){
+    if(no->filhos[i] != NULL)
+      contador += quantidadeDeNumerosDaArvoreAux(no->filhos[i]);
+  }
+  return contador;
 }
 
 /* Funcao que retorna a quantidade de numeros da arvore a. A contagem de numeros
    corresponde a quantidade de nos com o campo fimDoNumero=true**/
 int quantidadeDeNumerosDaArvore(Arvore a){
-
-  /* COMPLETAR */
-
-  return 0;
+  return quantidadeDeNumerosDaArvoreAux(a.raiz);
 }
 
 /* Funcao auxiliar para imprimir em pre-ordem todos os numeros da arvore.
