@@ -1,0 +1,8 @@
+Quantidade de numeros na arvore: 0, numero de nos: 1, altura: 1
+Numero inserido com sucesso.
+Quantidade de numeros na arvore: 1, numero de nos: 5, altura: 5
+Numero encontrado: 3450
+Numero nao encontrado: 1
+Nao foi possivel inserir o numero: 3450
+Numero encontrado: 3450
+Quantidade de numeros na arvore: 1, numero de nos: 5, altura: 5

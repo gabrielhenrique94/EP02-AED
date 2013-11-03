@@ -1,0 +1,14 @@
+Quantidade de numeros na arvore: 0, numero de nos: 1, altura: 1
+Numero inserido com sucesso.
+1
+Nao foi possivel inserir o numero: 1
+Numero inserido com sucesso.
+Numero inserido com sucesso.
+Numero inserido com sucesso.
+Numero inserido com sucesso.
+1
+12
+212
+9009
+9909
+Quantidade de numeros na arvore: 5, numero de nos: 11, altura: 5

@@ -36,20 +36,23 @@ void inicializarArvore(Arvore* a){
    Recebe o endereco do no atual e o subNumero, isto eh, a parte do numero
    que falta ser inserida */
 bool inserirNumeroAux1(PontNo raizSubArvore, int subNumero){
-
-  /* COMPLETAR */
-
-  return false;
+  //printf("%d\n",subNumero);
+  int n = subNumero % 10;
+  if(subNumero == 0 ){
+    raizSubArvore-> fimDoNumero = true;
+    return true;
+  }
+  if(raizSubArvore->filhos[n] == NULL)
+    raizSubArvore->filhos[n] = criarNo();
+  return inserirNumeroAux1(raizSubArvore->filhos[n], subNumero/10);
 }
 
 /* Funcao de insercao que recebe uma arvore e um numero e deve fazer a insercao
    deste numero na arvore caso ele nao esteja lah e retornar true; caso o 
    numero ja exista devera retornar false */
 bool inserirNumero(Arvore a, int numero){
-
-  /* COMPLETAR */
-
-  return false;
+  if(buscaNumero(a,numero)) return false;
+  return inserirNumeroAux1(a.raiz, numero);
 }
 
 /* Funcao auxiliar para retornar a altura da subarvore iniciada pelo noh 
@@ -114,36 +117,39 @@ int quantidadeDeNumerosDaArvore(Arvore a){
    esta informacao pode ser util para adicionar ao subNumero o valor correspon-
    dente ao digito atual [utilizando a funcao potenciaDeDez]. */
 void imprimirNumerosAux(PontNo subArvore, int subNumero, int profundidadeAtual){
-
-  /* COMPLETAR */
-
+  int i;
+  int subN2 = 0;
+  for (i = 0 ; i < 10 ; i++){
+    if(subArvore->filhos[i] != NULL){
+      subN2 = subNumero + i*potenciaDeDez(profundidadeAtual);
+      if(subArvore->filhos[i]->fimDoNumero)
+        printf("%i\n", subN2);
+      imprimirNumerosAux(subArvore->filhos[i], subN2, profundidadeAtual+1);
+      
+    }
+  }
 }
 
 /* Funcao principal para se imprimir todos os numeros em pre-ordem registrados
    na arvore a. */
 void imprimirNumeros(Arvore a){
-
-  /* COMPLETAR */
-
+  imprimirNumerosAux(a.raiz,0,0);
 }
 
 /* Funcao auxiliar para a busca de um numero numa dada arvore. O parametro 
    subArvore corresponde ao noh atual; o parametro subNumero corresponde a parte
    do numero que ainda falta ser encontrada. */
 bool buscaNumeroAux(PontNo subArvore, int subNumero){
-
-  /* COMPLETAR */
-
+  if(subNumero == 0 && subArvore->fimDoNumero) return true;
+  if(subArvore->filhos[subNumero%10]!= NULL)
+    return buscaNumeroAux(subArvore->filhos[subNumero%10], subNumero/10);
   return false;
 }
 
 /* Funcao principal para buscar o numero 'numero' na arvore a que deve retornar
    true caso este numero pertenca a arvore e false caso contrario. */
 bool buscaNumero(Arvore a, int numero){
-
-  /* COMPLETAR */
-
-  return false;
+  return buscaNumeroAux(a.raiz, numero);
 }
 
 
