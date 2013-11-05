@@ -58,19 +58,24 @@ bool inserirNumero(Arvore a, int numero){
 /* Funcao auxiliar para retornar a altura da subarvore iniciada pelo noh 
    apontado pelo parametro no. */
 int alturaArvoreAux(PontNo no){
-
-  /* COMPLETAR */
-
-  return 0;
+  int max = 0;
+  int i;
+  int nivelAux;
+  for(i = 0 ; i <10 ; i++){
+    if(no->filhos[i] != NULL){
+      nivelAux = alturaArvoreAux(no->filhos[i]);
+      if(nivelAux > max){
+        max = nivelAux;
+      }
+    }
+  }
+  return max + 1;
 }
 
 /* Funcao que retorna a altura da arvore a. A altura deste tipo de arvore sera
    uma unidade maior do que a quantidade de digitos do maior numero cadastrado.*/
 int alturaArvore(Arvore a){
-
-  /* COMPLETAR */
-
-  return 0;
+  return alturaArvoreAux(a.raiz);
 }
 
 
@@ -120,15 +125,16 @@ int quantidadeDeNumerosDaArvore(Arvore a){
 void imprimirNumerosAux(PontNo subArvore, int subNumero, int profundidadeAtual){
   int i;
   int subN2 = 0;
+  if(subArvore->fimDoNumero)
+      printf("%i\n", subNumero);
   for (i = 0 ; i < 10 ; i++){
     if(subArvore->filhos[i] != NULL){
       subN2 = subNumero + i*potenciaDeDez(profundidadeAtual);
-      if(subArvore->filhos[i]->fimDoNumero)
-        printf("%i\n", subN2);
       imprimirNumerosAux(subArvore->filhos[i], subN2, profundidadeAtual+1);
       
     }
   }
+
 }
 
 /* Funcao principal para se imprimir todos os numeros em pre-ordem registrados
