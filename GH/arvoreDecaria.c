@@ -36,7 +36,6 @@ void inicializarArvore(Arvore* a){
    Recebe o endereco do no atual e o subNumero, isto eh, a parte do numero
    que falta ser inserida */
 bool inserirNumeroAux1(PontNo raizSubArvore, int subNumero){
-  //printf("%d\n",subNumero);
   int n = subNumero % 10;
   if(subNumero == 0 ){
     raizSubArvore-> fimDoNumero = true;
