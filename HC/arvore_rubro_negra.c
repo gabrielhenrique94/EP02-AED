@@ -33,7 +33,13 @@ void imprime_arvoreRB(PNO raiz){
 /* cria um novo (aloca memoria) com chave=ch, inicializa propriamente os filhos esquerdo e direito e retorna 
    seu endereco */
 PNO criar_novo_no(TIPOCHAVE ch){
-  /* completar */
+    PNO novo = (PNO) malloc(sizeof(NO));
+    novo->chave = ch;
+    novo->dir = externo;
+    novo->esq = externo;
+    novo->cor = rubro;
+    
+    return novo;
 }
 
 /* verifica e acerta o equilibrio de um no apÃ³s uma inserÃ§Ã£o. */
@@ -49,6 +55,11 @@ bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* cont
 /* retorna true se a arvore rubro negra estiver vazia e false caso contrario */
 bool arvoreRN_vazia(PNO raiz){
   /* completar */
+    if (raiz == externo) {
+        return true;
+    }
+    
+    return false;
 }
 
 /* Busca o nÃ³ com  chave = x. 
