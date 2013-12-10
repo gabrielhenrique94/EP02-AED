@@ -16,8 +16,11 @@ void main(){
       controle = 1; 
       inserir_RN(&raiz, x, &raiz, NULL, NULL, &controle); 
       break;
+    case 'r': 
+      remover_RN(&raiz, x); 
+      break;
     case 'p': imprime_arvoreRB(raiz); printf("\n"); break;
-    default: while (operacao != '\n') scanf("%c",&operacao);
+    default: while (operacao != '\n')  scanf("%c %d", &operacao, &x);
     }
     scanf("%c %d", &operacao, &x);
   }

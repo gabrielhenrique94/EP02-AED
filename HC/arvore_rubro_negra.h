@@ -27,10 +27,10 @@ void imprime_arvoreRB(PNO raiz);
 PNO criar_novo_no(TIPOCHAVE ch);
 
 /* verifica e acerta o equilibrio de um no  apÃ³s uma inserÃ§Ã£o. */
-void rotacionar(PNO* raiz, PNO* filho, PNO* atual, PNO* pai, PNO* avo, char* controle);
+void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* controle);
 
 /* insere sem repeticao um novo no com chave = x, atual, pai e avo apontam, respectivamente, para o no corrente da busca, seu pai e seu avo, e controle controla a chamada da funcao rotacionar. Retorna true se inserir com sucesso e false caso contrario (se ja existir um no com a chave x). */
-bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO* pai, PNO* avo, char* controle);
+bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* controle);
  
 /* retorna true se a arvore rubro negra estiver vazia e false caso contrario */
 bool arvoreRN_vazia(PNO raiz);
