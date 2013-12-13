@@ -54,11 +54,7 @@ bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* cont
 
 /* retorna true se a arvore rubro negra estiver vazia e false caso contrario */
 bool arvoreRN_vazia(PNO raiz){
-  /* completar */
-    if (raiz == externo) {
-        return true;
-    }
-    
+    if (raiz == externo) return true;
     return false;
 }
 
@@ -66,12 +62,29 @@ bool arvoreRN_vazia(PNO raiz){
    Retorna o ponteiro para o nÃ³.
    VocÃª pode utilizar o no "externo" como sentinela. */
 PNO buscar_no(PNO raiz, TIPOCHAVE x){
-  /* completar */
+    if (arvoreRN_vazia(raiz))   return NULL;
+    PNO no = raiz;
+    while (no != externo && no->chave != x) {
+        if (x > no->chave) {    // vai para a direita 
+            no = no->dir;
+        } else {                //vai para a esquerda 
+            no = no->esq;
+        }
+    }
+    if (no != externo) return no;
+    return NULL;
 }
 
 /* retorna um ponteiro para o nÃ³ que Ã© o menor descendente direito de "no" (que nÃ£o seja o externo). */
 PNO menor_descendente_direito(PNO no){
-  /* completar */
+    if (no != NULL) {
+        aux_dir = no;
+        while (aux_dir->dir != externo) {
+            aux_dir = aux_dir->dir;
+        }
+        if (aux_dir != no) return aux_dir;
+    }
+    return NULL;
 }
 
 /* remove a chave x da arvore com raiz apontada por raiz. 
