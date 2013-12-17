@@ -49,7 +49,30 @@ void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* control
  
 /* insere sem repeticao um novo no com chave = x, atual, pai e avo apontam, respectivamente, para o no corrente da busca, seu pai e seu avo, e controle controla a chamada da funcao rotacionar. Retorna true se inserir com sucesso e false caso contrario (se ja existir um no com a chave x). */
 bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* controle){
-}  /* completar */
+    if (*atual == NULL || *raiz == NULL) return false;
+    if (*atual == externo) {
+        *atual = criar_novo_no(x);
+        if (arvoreRN_vazia(raiz)){ 
+            *raiz = *atual;
+            
+        } else {
+            if (pai->chave > atual->chave) {
+                *pai->esq = *atual;
+            } else {
+                *pai->dir = *atual;
+            }
+            
+        }
+        
+        if (*raiz == *atual) {
+            *raiz->cor = negro;
+        } else {
+            //ajusta pai do atual, ajusta filho do atual
+        }
+    } else {
+        //Fazer
+    }
+}  
 
 
 /* retorna true se a arvore rubro negra estiver vazia e false caso contrario */
