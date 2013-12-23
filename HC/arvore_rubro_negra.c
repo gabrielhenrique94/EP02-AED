@@ -43,52 +43,95 @@ PNO criar_novo_no(TIPOCHAVE ch){
 }
 
 /* verifica e acerta o equilibrio de um no apÃ³s uma inserÃ§Ã£o. */
-void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* controle){
-
+void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* controle) {
+    if (*controle != 2) {
        //pai é negro
         if ((pai->dir == atual && pai->esq->cor == rubro) || (pai->esq == atual && pai->dir->cor == rubro)) {
+            *controle = 0;
             //irmão do atual é rubro
-            atual->cor = negra;
+            atual->cor = negro;
             if (pai->dir == atual) {
-                pai->esq->cor = negra;
+                pai->esq->cor = negro;
             } else {
-                pai->dir->cor = negra;
+                pai->dir->cor = negro;
             }
             pai->cor = rubro;
             if (avo->cor == rubro){
                 //desequilibro chamada recursiva
-                rotacionar(raiz, pai, avo, avo->pai, avo->pai->pai, *controle);
+                rotacionar(raiz, pai, avo, avo->pai, avo->pai->pai, controle);
             }
+            *controle = 1;
             
         } else {
             //irmão do atual é negro
             if (atual->esq == filho && pai->esq == atual) {
+                atual->cor = negro;
+                pai->cor = rubro;
                 rotacionar_a_direita(&pai, atual);
             } else if(atual->esq == filho && pai->dir == atual) {
+                filho->cor = negro;
+                pai->cor = rubro;
                 rotacionar_a_direita(&atual, filho);
-                rotacionar_a_esquerda(PNO* raiz, PNO no)
+                rotacionar_a_esquerda(&pai, filho);
+            } else if (atual->dir == filho && pai->dir == atual) {
+                atual->cor = negro;
+                pai->cor = rubro;
+                rotacionar_a_esquerda(&pai, atual);
+            } else {
+                filho->cor = negro;
+                pai->cor = rubro;
+                rotacionar_a_esquerda(&atual, filho);
+                rotacionar_a_direita(&pai, filho);
             }
+            *controle = 1;
         }
-
+        
+        *controle = 2;
+    }
 }
  
 /* insere sem repeticao um novo no com chave = x, atual, pai e avo apontam, respectivamente, para o no corrente da busca, seu pai e seu avo, e controle controla a chamada da funcao rotacionar. Retorna true se inserir com sucesso e false caso contrario (se ja existir um no com a chave x). */
 bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* controle){
-    PNO aux_busca = buscar_no(*raiz, x);
-    if (aux_busca != NULL) return false;
-    PNO novo = criar_novo_no(x);
-    novo->pai = atual;
-    if (novo->chave > atual->chave) {
-        (*atual)->dir = novo;
-    } else {
-        (*atual)->esq = novo;
+    if (arvoreRN_vazia(*raiz)) {
+        *raiz = criar_novo_no(x);
+        (*raiz)->cor = negro;
+        return true;
     }
     
-    if (atual->cor == rubro) {
-        *controle = 2; //desequilibrado
-        //chamar o rotacionar
-     
+    PNO auxpai, auxavo, auxnovo;
+    if ((*atual)->pai != NULL) {
+        auxpai = (*atual)->pai;
+        if (auxpai->pai != NULL)
+            auxavo = auxpai->pai;
+    } else {
+        auxpai = NULL;
+        auxavo = NULL;
     }
+    
+  
+    if (x == (*atual)->chave) {
+        return false;
+    } else if (x > (*atual)->chave) {
+        if ((*atual)->dir != externo) {
+            inserir_RN(raiz, x, &(*atual)->dir, auxpai, auxavo, controle);
+        } else {
+             auxnovo = criar_novo_no(x);
+            (*atual)->dir = auxnovo;
+        }
+    } else {
+        if ((*atual)->esq != externo) {
+            inserir_RN(raiz, x, &(*atual)->esq, auxpai, auxavo, controle);
+        } else {
+            auxnovo = criar_novo_no(x);
+            (*atual)->esq = auxnovo;
+        }
+    }
+
+    if ((*atual)->cor == rubro) { //Caso 2
+       rotacionar(raiz, auxnovo, *atual, pai, avo, controle);
+    }
+    
+    return true;
 }  
 
 
@@ -118,7 +161,7 @@ PNO buscar_no(PNO raiz, TIPOCHAVE x){
 /* retorna um ponteiro para o nÃ³ que Ã© o menor descendente direito de "no" (que nÃ£o seja o externo). */
 PNO menor_descendente_direito(PNO no){
     if (no != NULL) {
-        aux_dir = no;
+        PNO aux_dir = no;
         while (aux_dir->dir != externo) {
             aux_dir = aux_dir->dir;
         }
@@ -136,8 +179,6 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
 /* faz uma rotaÃ§Ã£o a esquerda no nÃ³ no, na Ã¡rvore apontada por raiz */
 void rotacionar_a_esquerda(PNO* raiz, PNO no){
     PNO pai = *raiz;
-    pai->cor = rubro; 
-    no->cor = negro;
     no->pai = pai->pai;
     pai->dir = no->esq;
     pai->pai = no;
@@ -148,8 +189,6 @@ void rotacionar_a_esquerda(PNO* raiz, PNO no){
 /* faz uma rotaÃ§Ã£o a direita no nÃ³ no, na Ã¡rvore apontada por raiz */
 void rotacionar_a_direita(PNO* raiz, PNO no){
     PNO pai = *raiz;
-    pai->cor = rubro; 
-    no->cor = negro;
     no->pai = pai->pai;
     pai->esq = no->dir;
     pai->pai = no;
