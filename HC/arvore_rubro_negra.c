@@ -191,9 +191,10 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
         return false;
     }
     
-    PNO no, auxpai, auxmenor;
+    PNO no, auxpai, auxmenor, duplamente_negro; //duplamente_negro é o filho do nó a ser removido
     no = buscar_no(*raiz, x);
     if (no != NULL) {
+        COR cor_no = no->cor;
         if(no->esq != externo && no->dir != externo) {
             auxmenor = menor_descendente_direito(no);
             no->chave = auxmenor->chave;
@@ -206,6 +207,9 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
                     no->dir = auxmenor->dir;
                     auxmenor->dir->pai = no;
                 }
+                duplamente_negro = auxmenor->dir;
+            } else {
+                duplamente_negro = externo;
             }
             
             free(auxmenor);
@@ -215,22 +219,29 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
             if (auxpai != NULL) {
                 if (auxpai->dir == no) {
                     auxpai->dir = no->esq;
+                    no->esq->pai = auxpai;
                 } else {
                     auxpai->esq = no->esq;
+                    no->esq->pai = auxpai;
                 }
                 free(no);
             }
+            duplamente_negro = no->esq;
         } else if (no->dir != externo) {
             auxpai = no->pai;
             if (auxpai != NULL) {
                 if (auxpai->dir == no) {
                     auxpai->dir = no->dir;
+                    no->dir = auxpai;
                 } else {
                     auxpai->esq = no->dir;
+                    no->dir = auxpai;
                 }
                 free(no);
             }
+            duplamente_negro = no->dir;
         } else {
+            duplamente_negro = externo;
             auxpai = no->pai;
             if (auxpai != NULL) {
                 if (auxpai->dir == no) {
@@ -241,9 +252,15 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
             }
             free(no);
         }
+        
+        if (cor_no != rubro) { // o duplamente_negro é usado aqui
+            //Balancear
+            equilibrar_RN_apos_remocao(raiz, duplamente_negro);
+        }
     } else {
         return false;
     }
+    
     
     return true;
 }  
@@ -269,6 +286,76 @@ void rotacionar_a_direita(PNO* raiz, PNO no){
 }
 
 /* equilibra a Ã©rvore apontada por raiz, assumindo que o nÃ³ problemÃ¡tico Ã© q. */
-void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){
-  /* completar */
+void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){ //Verificar o que fazer com as raizes exatamente
+    PNO pai, irmao;
+    if (!arvoreRN_vazia(*raiz) && q != *raiz) { // verificar os externos depois
+        pai = q->pai;
+        if (pai->esq == q) {
+            irmao = pai->dir;
+            //Caso de 1-4 duplamente negro como filho ESQUERDO
+            if (irmao->cor == rubro) {
+                //Caso 1 - irmao é rubro, logo pai é negro.
+                pai->cor = rubro;
+                irmao->cor = negro;               
+                rotacionar_a_esquerda(&pai, irmao);
+                equilibrar_RN_apos_remocao(raiz, q);
+
+            } else if (irmao->cor == negro && irmao->esq->cor == negro && irmao->dir->cor == negro) {
+                //Caso 2 - irmao é negro e seus filhos tbm
+                irmao->cor = rubro;
+                if (pai->cor == negro) { // pai vira duplamente negro, logo tenho que equilibrar ele
+                    equilibrar_RN_apos_remocao(raiz, pai);
+                } else {
+                    pai->cor = negro; // arvore balanceada
+                }
+            } else if (irmao->cor == negro && irmao->esq->cor == rubro && irmao->dir->cor == negro) {
+                // Caso 3 - irmao é negro, o filho direito tbm e o esquerdo é rubro.
+                irmao->cor = rubro;
+                irmao->esq->cor = negro;
+                rotacionar_a_direita(&irmao, irmao->esq); //transformado em Caso 4
+                equilibrar_RN_apos_remocao(raiz, q);
+            } else {
+                // Caso 4 - irmao é negro e filho direito é rubro, nao se sabe a cor do outro filho
+                irmao->cor = pai->cor; //nao sabemos a cor do pai
+                pai->cor = negro;
+                irmao->dir->cor = negro;
+                rotacionar_a_esquerda(&pai, irmao);
+                equilibrar_RN_apos_remocao(raiz, *raiz); //Fazer q apontar para raiz, para sair do loop de equilíbrio                
+            }
+        } else {
+            irmao = pai->esq;
+            //Caso de 1-4 duplamente negro como filho DIREITO
+            if (irmao->cor == rubro) {
+                //Caso 1 - irmao é rubro, logo pai é negro.
+                pai->cor = rubro;
+                irmao->cor = negro;               
+                rotacionar_a_direita(&pai, irmao);
+                equilibrar_RN_apos_remocao(raiz, q);
+
+            } else if (irmao->cor == negro && irmao->dir->cor == negro && irmao->esq->cor == negro) {
+                //Caso 2 - irmao é negro e seus filhos tbm
+                irmao->cor = rubro;
+                if (pai->cor == negro) { // pai vira duplamente negro, logo tenho que equilibrar ele
+                    equilibrar_RN_apos_remocao(raiz, pai);
+                } else {
+                    pai->cor = negro; // arvore balanceada
+                }
+            } else if (irmao->cor == negro && irmao->dir->cor == rubro && irmao->esq->cor == negro) {
+                // Caso 3 - irmao é negro, o filho esquerdo tbm e o direito é rubro.
+                irmao->cor = rubro;
+                irmao->dir->cor = negro;
+                rotacionar_a_esquerda(&irmao, irmao->dir); //transformado em Caso 4
+                equilibrar_RN_apos_remocao(raiz, q);
+            } else {
+                // Caso 4 - irmao é negro e filho esquerdo é rubro, nao se sabe a cor do outro filho
+                irmao->cor = pai->cor; //nao sabemos a cor do pai
+                pai->cor = negro;
+                irmao->esq->cor = negro;
+                rotacionar_a_direita(&pai, irmao);
+                equilibrar_RN_apos_remocao(raiz, *raiz); //Fazer q apontar para raiz, para sair do loop de equilíbrio                
+            }
+        }
+    }
+    
+    return;
 }
