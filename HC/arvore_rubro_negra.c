@@ -35,6 +35,7 @@ void imprime_arvoreRB(PNO raiz){
 PNO criar_novo_no(TIPOCHAVE ch){
     PNO novo = (PNO) malloc(sizeof(NO));
     novo->chave = ch;
+    novo->pai = NULL;
     novo->dir = externo;
     novo->esq = externo;
     novo->cor = rubro;
@@ -119,8 +120,10 @@ bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* cont
             inserir_RN(raiz, x, &(*atual)->dir, auxpai, auxavo, controle);
         } else {
             printf("CRIA NOVO");
-             auxnovo = criar_novo_no(x);
+            auxnovo = criar_novo_no(x);
+            auxnovo->pai = *atual;
             (*atual)->dir = auxnovo;
+            
         }
     } else {
         printf("X<ATUAL");
@@ -130,6 +133,7 @@ bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* cont
         } else {
             printf("CRIA NOVO");
             auxnovo = criar_novo_no(x);
+            auxnovo->pai = *atual;
             (*atual)->esq = auxnovo;
         }
     }
