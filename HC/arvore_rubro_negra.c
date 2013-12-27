@@ -100,6 +100,7 @@ bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* cont
     
     PNO auxpai, auxavo, auxnovo;
     if ((*atual)->pai != NULL) {
+        printf("Tem pai");
         auxpai = (*atual)->pai;
         if (auxpai->pai != NULL)
             auxavo = auxpai->pai;
@@ -112,25 +113,32 @@ bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* cont
     if (x == (*atual)->chave) {
         return false;
     } else if (x > (*atual)->chave) {
+        printf("X>ATUAL");
         if ((*atual)->dir != externo) {
+            printf("DIR ATUAL");
             inserir_RN(raiz, x, &(*atual)->dir, auxpai, auxavo, controle);
         } else {
+            printf("CRIA NOVO");
              auxnovo = criar_novo_no(x);
             (*atual)->dir = auxnovo;
         }
     } else {
+        printf("X<ATUAL");
         if ((*atual)->esq != externo) {
+             printf("ESQ ATUAL");
             inserir_RN(raiz, x, &(*atual)->esq, auxpai, auxavo, controle);
         } else {
+            printf("CRIA NOVO");
             auxnovo = criar_novo_no(x);
             (*atual)->esq = auxnovo;
         }
     }
-
+     printf("ANTES ATUAL COR");
     if ((*atual)->cor == rubro) { //Caso 2
+        printf("ATUAL RUBRO :O");
        rotacionar(raiz, auxnovo, *atual, pai, avo, controle);
     }
-    
+    printf("ANTES TRUE");
     return true;
 }  
 
@@ -161,11 +169,13 @@ PNO buscar_no(PNO raiz, TIPOCHAVE x){
 /* retorna um ponteiro para o nÃ³ que Ã© o menor descendente direito de "no" (que nÃ£o seja o externo). */
 PNO menor_descendente_direito(PNO no){
     if (no != NULL) {
-        PNO aux_dir = no;
-        while (aux_dir->dir != externo) {
-            aux_dir = aux_dir->dir;
-        }
-        if (aux_dir != no) return aux_dir;
+        PNO aux_dir = no->dir;
+        if (aux_dir != externo) {
+            while (aux_dir->esq != externo) {
+                aux_dir = aux_dir->esq;
+            }
+            return aux_dir;
+       }
     }
     return NULL;
 }
@@ -173,7 +183,65 @@ PNO menor_descendente_direito(PNO no){
 /* remove a chave x da arvore com raiz apontada por raiz. 
    Retorna true se removeu com sucesso e false caso contrario (se nao havia um no com a chave x). */
 bool remover_RN(PNO* raiz, TIPOCHAVE x){
-  /* completar */
+    if (arvoreRN_vazia(*raiz)) {
+        return false;
+    }
+    
+    PNO no, auxpai, auxmenor;
+    no = buscar_no(*raiz, x);
+    if (no != NULL) {
+        if(no->esq != externo && no->dir != externo) {
+            auxmenor = menor_descendente_direito(no);
+            no->chave = auxmenor->chave;
+            if (auxmenor->dir != externo) {
+                auxpai = auxmenor->pai;
+                if (auxpai->chave != x) { // É o proprio nó com o valor a ser removido
+                    auxpai->esq = auxmenor->dir;
+                    auxmenor->dir->pai = auxpai;
+                } else {
+                    no->dir = auxmenor->dir;
+                    auxmenor->dir->pai = no;
+                }
+            }
+            
+            free(auxmenor);
+             
+        } else if (no->esq != externo) {
+            auxpai = no->pai;
+            if (auxpai != NULL) {
+                if (auxpai->dir == no) {
+                    auxpai->dir = no->esq;
+                } else {
+                    auxpai->esq = no->esq;
+                }
+                free(no);
+            }
+        } else if (no->dir != externo) {
+            auxpai = no->pai;
+            if (auxpai != NULL) {
+                if (auxpai->dir == no) {
+                    auxpai->dir = no->dir;
+                } else {
+                    auxpai->esq = no->dir;
+                }
+                free(no);
+            }
+        } else {
+            auxpai = no->pai;
+            if (auxpai != NULL) {
+                if (auxpai->dir == no) {
+                    auxpai->dir = externo;
+                } else {
+                    auxpai->esq = externo;
+                }
+            }
+            free(no);
+        }
+    } else {
+        return false;
+    }
+    
+    return true;
 }  
 
 /* faz uma rotaÃ§Ã£o a esquerda no nÃ³ no, na Ã¡rvore apontada por raiz */
