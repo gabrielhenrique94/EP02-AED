@@ -45,25 +45,32 @@ PNO criar_novo_no(TIPOCHAVE ch){
 
 /* verifica e acerta o equilibrio de um no apÃ³s uma inserÃ§Ã£o. */
 void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* controle) {
+    printf("rotacionar:{\n\traiz = %p \n\tfilho = %p\n\tatual = %p \n\tpai = %p \n\tavo = %p \n\tcontrole = %p \n\t*controle = %d\n}\n\n",raiz,filho,atual,pai,avo,controle,*controle);
     if (*controle != 2) {
+        printf("controle != 2 \n\n");
        //pai é negro
         if ((pai->dir == atual && pai->esq->cor == rubro) || (pai->esq == atual && pai->dir->cor == rubro)) {
+            printf("(pai->dir == atual && pai->esq->cor == rubro) || (pai->esq == atual && pai->dir->cor == rubro)\n");
             *controle = 0;
             //irmão do atual é rubro
             atual->cor = negro;
             if (pai->dir == atual) {
+                printf("pai->dir == atual\n");
                 pai->esq->cor = negro;
             } else {
+                printf("pai->dir != atual\n");
                 pai->dir->cor = negro;
             }
             pai->cor = rubro;
             if (avo->cor == rubro){
+                printf("avo_cor == rubro\n");
                 //desequilibro chamada recursiva
                 rotacionar(raiz, pai, avo, avo->pai, avo->pai->pai, controle);
             }
+            printf("avo_cor == rubro - saiu do if\n");
             *controle = 1;
-            
         } else {
+            printf("else - (pai->dir == atual && pai->esq->cor == rubro) || (pai->esq == atual && pai->dir->cor == rubro)\n");
             //irmão do atual é negro
             if (atual->esq == filho && pai->esq == atual) {
                 atual->cor = negro;
@@ -93,6 +100,7 @@ void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* control
  
 /* insere sem repeticao um novo no com chave = x, atual, pai e avo apontam, respectivamente, para o no corrente da busca, seu pai e seu avo, e controle controla a chamada da funcao rotacionar. Retorna true se inserir com sucesso e false caso contrario (se ja existir um no com a chave x). */
 bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* controle){
+    printf("inserir:{\n\traiz = %p\n\tx = %d\n\tatual = %p\n\tpai = %p\n\tavo = %p\n\tcontrole = %p\n\t*controle = %d\n}\n",raiz,x,atual,pai,avo,controle,*controle);
     if (arvoreRN_vazia(*raiz)) {
         *raiz = criar_novo_no(x);
         (*raiz)->cor = negro;
@@ -101,10 +109,12 @@ bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* cont
     
     PNO auxpai, auxavo, auxnovo;
     if ((*atual)->pai != NULL) {
-        printf("Tem pai");
+        printf("Tem pai\n");
         auxpai = (*atual)->pai;
-        if (auxpai->pai != NULL)
+        if (auxpai->pai != NULL){
+            printf("tem avo\n");
             auxavo = auxpai->pai;
+        }
     } else {
         auxpai = NULL;
         auxavo = NULL;
@@ -114,35 +124,35 @@ bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* cont
     if (x == (*atual)->chave) {
         return false;
     } else if (x > (*atual)->chave) {
-        printf("X>ATUAL");
+        printf("X>ATUAL\n");
         if ((*atual)->dir != externo) {
-            printf("DIR ATUAL");
-            inserir_RN(raiz, x, &(*atual)->dir, auxpai, auxavo, controle);
+            printf("DIR ATUAL\n");
+            inserir_RN(raiz, x, &(*atual)->dir, *atual, auxpai, controle);
         } else {
-            printf("CRIA NOVO");
+            printf("CRIA NOVO\n");
             auxnovo = criar_novo_no(x);
             auxnovo->pai = *atual;
             (*atual)->dir = auxnovo;
             
         }
     } else {
-        printf("X<ATUAL");
+        printf("X<ATUAL\n");
         if ((*atual)->esq != externo) {
-             printf("ESQ ATUAL");
-            inserir_RN(raiz, x, &(*atual)->esq, auxpai, auxavo, controle);
+             printf("ESQ ATUAL\n");
+            inserir_RN(raiz, x, &(*atual)->esq, *atual, auxpai, controle);
         } else {
-            printf("CRIA NOVO");
+            printf("CRIA NOVO\n");
             auxnovo = criar_novo_no(x);
             auxnovo->pai = *atual;
             (*atual)->esq = auxnovo;
         }
     }
-     printf("ANTES ATUAL COR");
+     printf("ANTES ATUAL COR\n");
     if ((*atual)->cor == rubro) { //Caso 2
-        printf("ATUAL RUBRO :O");
-       rotacionar(raiz, auxnovo, *atual, pai, avo, controle);
+       printf("ATUAL RUBRO :O\n");
+       rotacionar(raiz, auxnovo, *atual, auxpai, auxavo, controle);
     }
-    printf("ANTES TRUE");
+    printf("ANTES TRUE\n");
     return true;
 }  
 
