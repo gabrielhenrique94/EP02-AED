@@ -46,7 +46,8 @@ PNO criar_novo_no(TIPOCHAVE ch){
 /* verifica e acerta o equilibrio de um no apÃ³s uma inserÃ§Ã£o. */
 void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* controle) {
     printf("rotacionar:{\n\traiz = %p \n\tfilho = %p\n\tatual = %p \n\tpai = %p \n\tavo = %p \n\tcontrole = %p \n\t*controle = %d\n}\n\n",raiz,filho,atual,pai,avo,controle,*controle);
-    if (*controle != 2) {
+    PNO auxraiz;
+    if (*controle != 2 && pai != NULL && avo != NULL) {
         printf("controle != 2 \n\n");
        //pai é negro
         if ((pai->dir == atual && pai->esq->cor == rubro) || (pai->esq == atual && pai->dir->cor == rubro)) {
@@ -73,23 +74,39 @@ void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* control
             printf("else - (pai->dir == atual && pai->esq->cor == rubro) || (pai->esq == atual && pai->dir->cor == rubro)\n");
             //irmão do atual é negro
             if (atual->esq == filho && pai->esq == atual) {
+                auxraiz = pai;
                 atual->cor = negro;
                 pai->cor = rubro;
                 rotacionar_a_direita(&pai, atual);
+                if (auxraiz == *raiz) {
+                    *raiz = pai; 
+                }
             } else if(atual->esq == filho && pai->dir == atual) {
+                auxraiz = pai;
                 filho->cor = negro;
                 pai->cor = rubro;
                 rotacionar_a_direita(&atual, filho);
-                rotacionar_a_esquerda(&pai, filho);
+                rotacionar_a_esquerda(&pai, filho); //Aqui talvez seja atual ou filho
+                if (auxraiz == *raiz) {
+                    *raiz = pai; 
+                }
             } else if (atual->dir == filho && pai->dir == atual) {
+                auxraiz = pai;
                 atual->cor = negro;
                 pai->cor = rubro;
                 rotacionar_a_esquerda(&pai, atual);
+                if (auxraiz == *raiz) {
+                    *raiz = pai; 
+                }
             } else {
+                auxraiz = pai;
                 filho->cor = negro;
                 pai->cor = rubro;
                 rotacionar_a_esquerda(&atual, filho);
                 rotacionar_a_direita(&pai, filho);
+                if (auxraiz == *raiz) {
+                    *raiz = pai; 
+                }
             }
             *controle = 1;
         }

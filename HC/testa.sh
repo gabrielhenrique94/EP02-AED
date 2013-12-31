@@ -1,4 +1,4 @@
 make clean
 make
 echo "|----------------------------------- TESTA 1 ---------------------------------|"
-./testaRB.exe < testes/teste1.txt 
+./testaRB.exe < testes/teste2.txt 
