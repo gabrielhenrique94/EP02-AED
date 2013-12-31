@@ -80,23 +80,30 @@ void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* control
             printf("else - (pai->dir == atual && pai->esq->cor == rubro) || (pai->esq == atual && pai->dir->cor == rubro)\n");
             //irmão do atual é negro
             if (atual->esq == filho && pai->esq == atual) {
+                printf("tudo na esq.\n");
                 auxraiz = pai;
                 atual->cor = negro;
                 pai->cor = rubro;
+                printf("Antes do rota a impressão: \n");
+                
                 rotacionar_a_direita(&pai, atual);
+                printf("Depois do rota a impressão: \n");
+                imprime_arvoreRB(*raiz);
                 if (auxraiz == *raiz) {
                     *raiz = pai; 
                 }
             } else if(atual->esq == filho && pai->dir == atual) {
+                printf("tudo na dir/esq.");
                 auxraiz = pai;
                 filho->cor = negro;
                 pai->cor = rubro;
                 rotacionar_a_direita(&atual, filho);
-                rotacionar_a_esquerda(&pai, filho); //Aqui talvez seja atual ou filho
+                rotacionar_a_esquerda(&pai, atual); //Aqui talvez seja atual ou filho
                 if (auxraiz == *raiz) {
                     *raiz = pai; 
                 }
             } else if (atual->dir == filho && pai->dir == atual) {
+                printf("tudo na dir.");
                 auxraiz = pai;
                 atual->cor = negro;
                 pai->cor = rubro;
@@ -105,11 +112,12 @@ void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* control
                     *raiz = pai; 
                 }
             } else {
+                printf("tudo na esq/dir.");
                 auxraiz = pai;
                 filho->cor = negro;
                 pai->cor = rubro;
                 rotacionar_a_esquerda(&atual, filho);
-                rotacionar_a_direita(&pai, filho);
+                rotacionar_a_direita(&pai, atual);
                 if (auxraiz == *raiz) {
                     *raiz = pai; 
                 }
