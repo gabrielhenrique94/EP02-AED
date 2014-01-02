@@ -301,22 +301,32 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
 
 /* faz uma rotaÃ§Ã£o a esquerda no nÃ³ no, na Ã¡rvore apontada por raiz */
 void rotacionar_a_esquerda(PNO* raiz, PNO no){
-    PNO pai = *raiz;
-    no->pai = pai->pai;
-    pai->dir = no->esq;
+    PNO pai, avo, filho_no_esq;
+    pai = *raiz;
+    avo = pai->pai;
+    filho_no_esq = no->esq;    
+    no->pai = avo;
+    pai->dir = filho_no_esq;
     pai->pai = no;
     no->esq = pai;
-    *raiz = no;
+    if (avo != NULL) {
+        avo->dir = no;
+    }
 }
 
 /* faz uma rotaÃ§Ã£o a direita no nÃ³ no, na Ã¡rvore apontada por raiz */
 void rotacionar_a_direita(PNO* raiz, PNO no){
-    PNO pai = *raiz;
-    no->pai = pai->pai;
-    pai->esq = no->dir;
+    PNO pai, avo, filho_no_dir;
+    pai = *raiz;
+    avo = pai->pai;
+    filho_no_dir = no->dir;    
+    no->pai = avo;
+    pai->esq = filho_no_dir;
     pai->pai = no;
     no->dir = pai;
-    *raiz = no;
+    if (avo != NULL) {
+        avo->esq = no;
+    }
 }
 
 /* equilibra a Ã©rvore apontada por raiz, assumindo que o nÃ³ problemÃ¡tico Ã© q. */
