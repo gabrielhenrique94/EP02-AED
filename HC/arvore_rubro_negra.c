@@ -47,18 +47,14 @@ PNO criar_novo_no(TIPOCHAVE ch){
 void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* controle) {
      PNO auxraiz;
     if (*controle != 2 && atual != NULL && pai != NULL) {
-        printf("controle != 2 \n\n");
        //pai é negro
         if ((pai->dir == atual && pai->esq->cor == rubro) || (pai->esq == atual && pai->dir->cor == rubro)) {
-            printf("(pai->dir == atual && pai->esq->cor == rubro) || (pai->esq == atual && pai->dir->cor == rubro)\n");
             *controle = 0;
             //irmão do atual é rubro
             
             if (pai->dir == atual) {
-                printf("pai->dir == atual\n");
                 pai->esq->cor = negro;
             } else {
-                printf("pai->dir != atual\n");
                 pai->dir->cor = negro;
             }
             
@@ -69,17 +65,16 @@ void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* control
             }
             
             if (avo != NULL && avo->cor == rubro){ // Controle acho que era para o avo
-                printf("avo_cor == rubro\n");
                 //desequilibro chamada recursiva
                 rotacionar(raiz, pai, avo, avo->pai, avo->pai->pai, controle);
             }
 
             *controle = 1;
         } else {
-            printf("else - (pai->dir == atual && pai->esq->cor == rubro) || (pai->esq == atual && pai->dir->cor == rubro)\n");
+        
             //irmão do atual é negro
             if (atual->esq == filho && pai->esq == atual) {
-                printf("tudo na esq.\n");
+                
                 auxraiz = pai;
                 atual->cor = negro;
                 pai->cor = rubro;
@@ -90,7 +85,7 @@ void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* control
                     *raiz = pai; 
                 }
             } else if(atual->esq == filho && pai->dir == atual) {
-                printf("tudo na dir/esq.");
+               
                 auxraiz = pai;
                 filho->cor = negro;
                 pai->cor = rubro;
@@ -100,7 +95,7 @@ void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* control
                     *raiz = pai; 
                 }
             } else if (atual->dir == filho && pai->dir == atual) {
-                printf("tudo na dir.");
+            
                 auxraiz = pai;
                 atual->cor = negro;
                 pai->cor = rubro;
@@ -109,7 +104,7 @@ void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* control
                     *raiz = pai; 
                 }
             } else {
-                printf("tudo na esq/dir.");
+            
                 auxraiz = pai;
                 filho->cor = negro;
                 pai->cor = rubro;
@@ -128,7 +123,7 @@ void rotacionar(PNO* raiz, PNO filho, PNO atual, PNO pai, PNO avo, char* control
  
 /* insere sem repeticao um novo no com chave = x, atual, pai e avo apontam, respectivamente, para o no corrente da busca, seu pai e seu avo, e controle controla a chamada da funcao rotacionar. Retorna true se inserir com sucesso e false caso contrario (se ja existir um no com a chave x). */
 bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* controle){
-    printf("Valor a ser insenrido: %d\n", x);
+   
     if (arvoreRN_vazia(*raiz)) {
         *raiz = criar_novo_no(x);
         (*raiz)->cor = negro;
@@ -159,10 +154,7 @@ bool inserir_RN(PNO* raiz, TIPOCHAVE x, PNO* atual, PNO pai, PNO avo, char* cont
     }
 
     if (*controle != 2 && (*atual)->cor == rubro) { //Caso 2
-       printf("------------------------------------\n");
-       printf("ATUAL RUBRO - Rotacionar \n ");
        rotacionar(raiz, auxnovo, *atual, (*atual)->pai, (*atual)->pai->pai, controle);
-       printf("------------------------------------\n");
     }
     return true;
 }  
@@ -289,15 +281,34 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
 /* faz uma rotaÃ§Ã£o a esquerda no nÃ³ no, na Ã¡rvore apontada por raiz */
 void rotacionar_a_esquerda(PNO* raiz, PNO no){
     PNO pai, avo, filho_no_esq;
+    bool filho_avo_dir;
     pai = *raiz;
     avo = pai->pai;
+   
+    if (avo != NULL) {
+        if (avo->dir == pai) {
+            filho_avo_dir = true;
+        } else {
+            filho_avo_dir = false; //é filho dir em rot duplas
+        }
+    }
+   
     filho_no_esq = no->esq;    
     no->pai = avo;
     pai->dir = filho_no_esq;
     pai->pai = no;
     no->esq = pai;
+   
+    if (filho_no_esq != externo) {
+        filho_no_esq->pai = pai;
+    }
+    
     if (avo != NULL) {
-        avo->dir = no;
+        if (filho_avo_dir) {
+            avo->dir = no;
+        } else {
+            avo->esq = no;
+        }
     }
     *raiz = no;
 }
@@ -305,15 +316,34 @@ void rotacionar_a_esquerda(PNO* raiz, PNO no){
 /* faz uma rotaÃ§Ã£o a direita no nÃ³ no, na Ã¡rvore apontada por raiz */
 void rotacionar_a_direita(PNO* raiz, PNO no){
     PNO pai, avo, filho_no_dir;
+    bool filho_avo_esq;
     pai = *raiz;
     avo = pai->pai;
+    
+    if (avo != NULL) {
+        if (avo->esq == pai) {
+            filho_avo_esq = true;
+        } else {
+            filho_avo_esq = false; //é filho dir em rot duplas
+        }
+    }
+    
     filho_no_dir = no->dir;    
     no->pai = avo;
     pai->esq = filho_no_dir;
     pai->pai = no;
     no->dir = pai;
+    
+    if (filho_no_dir != externo) {
+        filho_no_dir->pai = pai;
+    }
+    
     if (avo != NULL) {
-        avo->esq = no;
+        if (filho_avo_esq) {
+            avo->esq = no;
+        } else {
+            avo->dir = no;
+        }
     }
     *raiz = no;
 }
