@@ -170,17 +170,26 @@ bool arvoreRN_vazia(PNO raiz){
    Retorna o ponteiro para o nÃ³.
    VocÃª pode utilizar o no "externo" como sentinela. */
 PNO buscar_no(PNO raiz, TIPOCHAVE x){
+    printf("\nBUSCA NOO\n");
     if (arvoreRN_vazia(raiz))   return NULL;
     PNO no = raiz;
+    printf("no: %d\n", no->chave);
     while (no != externo && no->chave != x) {
         if (x > no->chave) {    // vai para a direita 
             no = no->dir;
+            printf("no dir: %d\n", no->chave);
         } else {                //vai para a esquerda 
             no = no->esq;
+            printf("no esq: %d\n", no->chave);
         }
     }
-    if (no != externo) return no;
-    return NULL;
+    if (no != externo){
+    printf("no RETORNADO: %p\n", no);
+        return no;
+    
+    } else {
+        return NULL;
+    }
 }
 
 /* retorna um ponteiro para o nÃ³ que Ã© o menor descendente direito de "no" (que nÃ£o seja o externo). */
@@ -200,25 +209,28 @@ PNO menor_descendente_direito(PNO no){
 /* remove a chave x da arvore com raiz apontada por raiz. 
    Retorna true se removeu com sucesso e false caso contrario (se nao havia um no com a chave x). */
 bool remover_RN(PNO* raiz, TIPOCHAVE x){
-    if (arvoreRN_vazia(*raiz)) {
-        return false;
-    }
+    printf("Valor a ser removido: %d\n",x);    
+    PNO auxno, auxpai, auxmenor, duplamente_negro; //duplamente_negro e o filho do no a ser removido
     
-    PNO no, auxpai, auxmenor, duplamente_negro; //duplamente_negro é o filho do nó a ser removido
-    no = buscar_no(*raiz, x);
-    if (no != NULL) {
-        COR cor_no = no->cor;
-        if(no->esq != externo && no->dir != externo) {
-            auxmenor = menor_descendente_direito(no);
-            no->chave = auxmenor->chave;
+    printf("Antes de buscar\n");
+    
+    auxno = buscar_no(*raiz, x);
+    printf("DEPOIS de buscar\n");
+    
+    if (auxno != NULL) {
+        printf("Nó buscado: %d",auxno->chave);
+        COR cor_no = auxno->cor;
+        if(auxno->esq != externo && auxno->dir != externo) {
+            auxmenor = menor_descendente_direito(auxno);
+            auxno->chave = auxmenor->chave;
             if (auxmenor->dir != externo) {
                 auxpai = auxmenor->pai;
                 if (auxpai->chave != x) { // É o proprio nó com o valor a ser removido
                     auxpai->esq = auxmenor->dir;
                     auxmenor->dir->pai = auxpai;
                 } else {
-                    no->dir = auxmenor->dir;
-                    auxmenor->dir->pai = no;
+                    auxno->dir = auxmenor->dir;
+                    auxmenor->dir->pai = auxno;
                 }
                 duplamente_negro = auxmenor->dir;
             } else {
@@ -227,43 +239,43 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
             
             free(auxmenor);
              
-        } else if (no->esq != externo) {
-            auxpai = no->pai;
+        } else if (auxno->esq != externo) {
+            auxpai = auxno->pai;
             if (auxpai != NULL) {
-                if (auxpai->dir == no) {
-                    auxpai->dir = no->esq;
-                    no->esq->pai = auxpai;
+                if (auxpai->dir == auxno) {
+                    auxpai->dir = auxno->esq;
+                    auxno->esq->pai = auxpai;
                 } else {
-                    auxpai->esq = no->esq;
-                    no->esq->pai = auxpai;
+                    auxpai->esq = auxno->esq;
+                    auxno->esq->pai = auxpai;
                 }
-                free(no);
+                free(auxno);
             }
-            duplamente_negro = no->esq;
-        } else if (no->dir != externo) {
-            auxpai = no->pai;
+            duplamente_negro = auxno->esq;
+        } else if (auxno->dir != externo) {
+            auxpai = auxno->pai;
             if (auxpai != NULL) {
-                if (auxpai->dir == no) {
-                    auxpai->dir = no->dir;
-                    no->dir = auxpai;
+                if (auxpai->dir == auxno) {
+                    auxpai->dir = auxno->dir;
+                    auxno->dir = auxpai;
                 } else {
-                    auxpai->esq = no->dir;
-                    no->dir = auxpai;
+                    auxpai->esq = auxno->dir;
+                    auxno->dir = auxpai;
                 }
-                free(no);
+                free(auxno);
             }
-            duplamente_negro = no->dir;
+            duplamente_negro = auxno->dir;
         } else {
             duplamente_negro = externo;
-            auxpai = no->pai;
+            auxpai = auxno->pai;
             if (auxpai != NULL) {
-                if (auxpai->dir == no) {
+                if (auxpai->dir == auxno) {
                     auxpai->dir = externo;
                 } else {
                     auxpai->esq = externo;
                 }
             }
-            free(no);
+            free(auxno);
         }
         
         if (cor_no != rubro) { // o duplamente_negro é usado aqui
