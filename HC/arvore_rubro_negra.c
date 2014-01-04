@@ -7,7 +7,6 @@ PNO externo = NULL;
 
 /* inicializa uma arvore vazia */
 void inicializar_arvoreRB(PNO* raiz){
-  /* completar. Aqui eh um bom lugar para criar o no externo */
   externo = (PNO) malloc(sizeof(NO));
   externo->cor = negro;
   *raiz = externo;
@@ -170,21 +169,16 @@ bool arvoreRN_vazia(PNO raiz){
    Retorna o ponteiro para o nÃ³.
    VocÃª pode utilizar o no "externo" como sentinela. */
 PNO buscar_no(PNO raiz, TIPOCHAVE x){
-    printf("\nBUSCA NOO\n");
     if (arvoreRN_vazia(raiz))   return NULL;
     PNO no = raiz;
-    printf("no: %d\n", no->chave);
     while (no != externo && no->chave != x) {
         if (x > no->chave) {    // vai para a direita 
             no = no->dir;
-            printf("no dir: %d\n", no->chave);
         } else {                //vai para a esquerda 
             no = no->esq;
-            printf("no esq: %d\n", no->chave);
         }
     }
     if (no != externo){
-    printf("no RETORNADO: %p\n", no);
         return no;
     
     } else {
@@ -212,13 +206,9 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
     printf("Valor a ser removido: %d\n",x);    
     PNO auxno, auxpai, auxmenor, duplamente_negro; //duplamente_negro e o filho do no a ser removido
     
-    printf("Antes de buscar\n");
-    
     auxno = buscar_no(*raiz, x);
-    printf("DEPOIS de buscar\n");
     
     if (auxno != NULL) {
-        printf("Nó buscado: %d",auxno->chave);
         COR cor_no = auxno->cor;
         if(auxno->esq != externo && auxno->dir != externo) {
             auxmenor = menor_descendente_direito(auxno);
@@ -280,7 +270,7 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
         
         if (cor_no != rubro) { // o duplamente_negro é usado aqui
             //Balancear
-            equilibrar_RN_apos_remocao(raiz, duplamente_negro);
+            equilibrar_RN_apos_remocao(&auxpai, duplamente_negro);
         }
     } else {
         return false;
@@ -361,10 +351,11 @@ void rotacionar_a_direita(PNO* raiz, PNO no){
 }
 
 /* equilibra a Ã©rvore apontada por raiz, assumindo que o nÃ³ problemÃ¡tico Ã© q. */
-void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){ //Verificar o que fazer com as raizes exatamente
+void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){ 
     PNO pai, irmao;
-    if (!arvoreRN_vazia(*raiz) && q != *raiz) { // verificar os externos depois
-        pai = q->pai;
+    pai = *raiz;
+ 
+    if (pai != NULL) { 
         if (pai->esq == q) {
             irmao = pai->dir;
             //Caso de 1-4 duplamente negro como filho ESQUERDO
@@ -373,13 +364,13 @@ void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){ //Verificar o que fazer com a
                 pai->cor = rubro;
                 irmao->cor = negro;               
                 rotacionar_a_esquerda(&pai, irmao);
-                equilibrar_RN_apos_remocao(raiz, q);
+                equilibrar_RN_apos_remocao(&pai->esq, q); // o filho do pai virou raiz, entao temos que continuar na mesma raiz
 
             } else if (irmao->cor == negro && irmao->esq->cor == negro && irmao->dir->cor == negro) {
                 //Caso 2 - irmao é negro e seus filhos tbm
                 irmao->cor = rubro;
                 if (pai->cor == negro) { // pai vira duplamente negro, logo tenho que equilibrar ele
-                    equilibrar_RN_apos_remocao(raiz, pai);
+                    equilibrar_RN_apos_remocao(&pai->pai, pai);
                 } else {
                     pai->cor = negro; // arvore balanceada
                 }
@@ -388,16 +379,16 @@ void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){ //Verificar o que fazer com a
                 irmao->cor = rubro;
                 irmao->esq->cor = negro;
                 rotacionar_a_direita(&irmao, irmao->esq); //transformado em Caso 4
-                equilibrar_RN_apos_remocao(raiz, q);
+                equilibrar_RN_apos_remocao(&pai, q);
             } else {
                 // Caso 4 - irmao é negro e filho direito é rubro, nao se sabe a cor do outro filho
                 irmao->cor = pai->cor; //nao sabemos a cor do pai
                 pai->cor = negro;
                 irmao->dir->cor = negro;
                 rotacionar_a_esquerda(&pai, irmao);
-                equilibrar_RN_apos_remocao(raiz, *raiz); //Fazer q apontar para raiz, para sair do loop de equilíbrio                
+                equilibrar_RN_apos_remocao(&pai->pai, pai); //Fazer q apontar para raiz, para sair do loop de equilíbrio                
             }
-        } else {
+        } else { // q e filho dir de pai
             irmao = pai->esq;
             //Caso de 1-4 duplamente negro como filho DIREITO
             if (irmao->cor == rubro) {
@@ -405,13 +396,13 @@ void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){ //Verificar o que fazer com a
                 pai->cor = rubro;
                 irmao->cor = negro;               
                 rotacionar_a_direita(&pai, irmao);
-                equilibrar_RN_apos_remocao(raiz, q);
+                equilibrar_RN_apos_remocao(&pai->dir, q);
 
             } else if (irmao->cor == negro && irmao->dir->cor == negro && irmao->esq->cor == negro) {
                 //Caso 2 - irmao é negro e seus filhos tbm
                 irmao->cor = rubro;
                 if (pai->cor == negro) { // pai vira duplamente negro, logo tenho que equilibrar ele
-                    equilibrar_RN_apos_remocao(raiz, pai);
+                    equilibrar_RN_apos_remocao(&pai->pai, pai);
                 } else {
                     pai->cor = negro; // arvore balanceada
                 }
@@ -420,14 +411,14 @@ void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){ //Verificar o que fazer com a
                 irmao->cor = rubro;
                 irmao->dir->cor = negro;
                 rotacionar_a_esquerda(&irmao, irmao->dir); //transformado em Caso 4
-                equilibrar_RN_apos_remocao(raiz, q);
+                equilibrar_RN_apos_remocao(&pai, q);
             } else {
                 // Caso 4 - irmao é negro e filho esquerdo é rubro, nao se sabe a cor do outro filho
                 irmao->cor = pai->cor; //nao sabemos a cor do pai
                 pai->cor = negro;
                 irmao->esq->cor = negro;
                 rotacionar_a_direita(&pai, irmao);
-                equilibrar_RN_apos_remocao(raiz, *raiz); //Fazer q apontar para raiz, para sair do loop de equilíbrio                
+                equilibrar_RN_apos_remocao(&pai->pai, pai); //Fazer q apontar para raiz, para sair do loop de equilíbrio                
             }
         }
     }
