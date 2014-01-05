@@ -377,9 +377,8 @@ void rotacionar_a_direita(PNO* raiz, PNO no){
 
 /* equilibra a Ã©rvore apontada por raiz, assumindo que o nÃ³ problemÃ¡tico Ã© q. */
 void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){    
-    PNO pai, irmao, auxraiz;
+    PNO pai, irmao;
     pai = *raiz;
-    auxraiz = pai;
  
     if (pai != q && pai != NULL && q != NULL && q->cor == negro) { 
         if (pai->esq == q) {
