@@ -203,18 +203,18 @@ PNO menor_descendente_direito(PNO no){
 /* remove a chave x da arvore com raiz apontada por raiz. 
    Retorna true se removeu com sucesso e false caso contrario (se nao havia um no com a chave x). */
 bool remover_RN(PNO* raiz, TIPOCHAVE x){
-    printf("Valor a ser removido: %d\n",x);    
-    PNO auxno, auxpai, auxmenor, duplamente_negro; //duplamente_negro e o filho do no a ser removido
+    PNO auxno, auxpai, auxmenor, auxraiz, duplamente_negro; //duplamente_negro e o filho do no a ser removido
     
     auxno = buscar_no(*raiz, x);
-    
+   
     if (auxno != NULL) {
         COR cor_no = auxno->cor;
         if(auxno->esq != externo && auxno->dir != externo) {
             auxmenor = menor_descendente_direito(auxno);
             auxno->chave = auxmenor->chave;
+            auxpai = auxmenor->pai;
+            auxraiz = auxpai;
             if (auxmenor->dir != externo) {
-                auxpai = auxmenor->pai;
                 if (auxpai->chave != x) { // É o proprio nó com o valor a ser removido
                     auxpai->esq = auxmenor->dir;
                     auxmenor->dir->pai = auxpai;
@@ -224,13 +224,19 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
                 }
                 duplamente_negro = auxmenor->dir;
             } else {
+                if (auxpai->esq == auxmenor) {
+                    auxpai->esq = externo;
+                } else {
+                    auxpai->dir = externo;
+                }
                 duplamente_negro = externo;
-            }
+            }            
             
             free(auxmenor);
              
         } else if (auxno->esq != externo) {
             auxpai = auxno->pai;
+            auxraiz = auxpai;
             if (auxpai != NULL) {
                 if (auxpai->dir == auxno) {
                     auxpai->dir = auxno->esq;
@@ -239,38 +245,57 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
                     auxpai->esq = auxno->esq;
                     auxno->esq->pai = auxpai;
                 }
-                free(auxno);
+                duplamente_negro = auxno->esq;
+            } else {
+                *raiz = auxno->esq;
+                (*raiz)->pai = NULL;
+                duplamente_negro = *raiz;
             }
-            duplamente_negro = auxno->esq;
+            
+            free(auxno);
+            
         } else if (auxno->dir != externo) {
             auxpai = auxno->pai;
+            auxraiz = auxpai;
             if (auxpai != NULL) {
                 if (auxpai->dir == auxno) {
                     auxpai->dir = auxno->dir;
-                    auxno->dir = auxpai;
+                    auxno->dir->pai = auxpai;
                 } else {
                     auxpai->esq = auxno->dir;
-                    auxno->dir = auxpai;
+                    auxno->dir->pai = auxpai;
                 }
-                free(auxno);
+                duplamente_negro = auxno->dir;
+            } else {
+                *raiz = auxno->dir;
+                (*raiz)->pai = NULL;
+                duplamente_negro = *raiz;
             }
-            duplamente_negro = auxno->dir;
+            free(auxno);
         } else {
             duplamente_negro = externo;
             auxpai = auxno->pai;
+            auxraiz = auxpai;
             if (auxpai != NULL) {
                 if (auxpai->dir == auxno) {
                     auxpai->dir = externo;
                 } else {
                     auxpai->esq = externo;
                 }
+            } else {
+                //Arvore totalmente vazia apos a delecao
+                *raiz = externo;
             }
+            
             free(auxno);
         }
         
         if (cor_no != rubro) { // o duplamente_negro é usado aqui
             //Balancear
             equilibrar_RN_apos_remocao(&auxpai, duplamente_negro);
+            if (auxraiz == *raiz) {
+                (*raiz) = auxpai;
+            }
         }
     } else {
         return false;
@@ -351,11 +376,12 @@ void rotacionar_a_direita(PNO* raiz, PNO no){
 }
 
 /* equilibra a Ã©rvore apontada por raiz, assumindo que o nÃ³ problemÃ¡tico Ã© q. */
-void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){ 
-    PNO pai, irmao;
+void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){    
+    PNO pai, irmao, auxraiz;
     pai = *raiz;
+    auxraiz = pai;
  
-    if (pai != NULL) { 
+    if (pai != q && pai != NULL && q != NULL && q->cor == negro) { 
         if (pai->esq == q) {
             irmao = pai->dir;
             //Caso de 1-4 duplamente negro como filho ESQUERDO
@@ -364,16 +390,21 @@ void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){
                 pai->cor = rubro;
                 irmao->cor = negro;               
                 rotacionar_a_esquerda(&pai, irmao);
+                if (pai->pai == NULL) {
+                    *raiz = pai;
+                }
                 equilibrar_RN_apos_remocao(&pai->esq, q); // o filho do pai virou raiz, entao temos que continuar na mesma raiz
 
             } else if (irmao->cor == negro && irmao->esq->cor == negro && irmao->dir->cor == negro) {
                 //Caso 2 - irmao é negro e seus filhos tbm
+                
                 irmao->cor = rubro;
                 if (pai->cor == negro) { // pai vira duplamente negro, logo tenho que equilibrar ele
                     equilibrar_RN_apos_remocao(&pai->pai, pai);
                 } else {
                     pai->cor = negro; // arvore balanceada
                 }
+              
             } else if (irmao->cor == negro && irmao->esq->cor == rubro && irmao->dir->cor == negro) {
                 // Caso 3 - irmao é negro, o filho direito tbm e o esquerdo é rubro.
                 irmao->cor = rubro;
@@ -386,7 +417,10 @@ void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){
                 pai->cor = negro;
                 irmao->dir->cor = negro;
                 rotacionar_a_esquerda(&pai, irmao);
-                equilibrar_RN_apos_remocao(&pai->pai, pai); //Fazer q apontar para raiz, para sair do loop de equilíbrio                
+                if (pai->pai == NULL) {
+                    *raiz = pai;
+                }
+                equilibrar_RN_apos_remocao(&pai, pai); //Fazer q apontar para raiz, para sair do loop de equilíbrio                
             }
         } else { // q e filho dir de pai
             irmao = pai->esq;
@@ -396,16 +430,21 @@ void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){
                 pai->cor = rubro;
                 irmao->cor = negro;               
                 rotacionar_a_direita(&pai, irmao);
+                if (pai->pai == NULL) {
+                    *raiz = pai;
+                }
                 equilibrar_RN_apos_remocao(&pai->dir, q);
 
             } else if (irmao->cor == negro && irmao->dir->cor == negro && irmao->esq->cor == negro) {
                 //Caso 2 - irmao é negro e seus filhos tbm
+
                 irmao->cor = rubro;
                 if (pai->cor == negro) { // pai vira duplamente negro, logo tenho que equilibrar ele
                     equilibrar_RN_apos_remocao(&pai->pai, pai);
                 } else {
                     pai->cor = negro; // arvore balanceada
                 }
+                
             } else if (irmao->cor == negro && irmao->dir->cor == rubro && irmao->esq->cor == negro) {
                 // Caso 3 - irmao é negro, o filho esquerdo tbm e o direito é rubro.
                 irmao->cor = rubro;
@@ -418,8 +457,16 @@ void equilibrar_RN_apos_remocao(PNO* raiz, PNO q){
                 pai->cor = negro;
                 irmao->esq->cor = negro;
                 rotacionar_a_direita(&pai, irmao);
-                equilibrar_RN_apos_remocao(&pai->pai, pai); //Fazer q apontar para raiz, para sair do loop de equilíbrio                
+                if (pai->pai == NULL) {
+                    *raiz = pai;
+                }
+                
+                equilibrar_RN_apos_remocao(&pai, pai); //Fazer q apontar para raiz, para sair do loop de equilíbrio                
             }
+        }
+    } else {
+        if (q != NULL && q->cor == rubro) {
+            q->cor = negro;
         }
     }
     
