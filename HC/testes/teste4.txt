@@ -1,0 +1,28 @@
+p
+i 5
+p
+i 8
+p
+i 30
+p
+i 5
+p
+i 15
+p
+i 3
+p
+r 20
+p
+r 15
+p
+r 30
+p
+r 8
+p
+r 5
+p
+r 3
+p
+r 5
+p
+f
