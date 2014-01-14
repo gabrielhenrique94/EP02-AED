@@ -1,0 +1,78 @@
+p
+i 10
+p
+i 20
+p
+i 30
+p
+i 40
+p
+i 50
+p
+i 60
+p
+i 70
+p
+i 80
+p
+i 90
+p
+i 100
+p
+i 1
+p
+i 2
+p
+i 3
+p
+i 4
+p
+i 5
+p
+i 6
+p
+i 7
+p
+i 8
+p
+i 9
+p
+r 40
+p
+r 50
+p
+r 4
+p
+r 70
+p
+r 1
+p
+r 80
+p
+r 90
+p
+r 5
+p
+r 3
+p
+r 2
+p
+r 100
+p
+r 60
+p
+r 6
+p
+r 8
+p
+r 9
+p
+r 10
+p
+r 30
+p
+r 7
+p
+r 20
+p
+f
