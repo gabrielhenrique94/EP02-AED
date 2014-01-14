@@ -218,6 +218,7 @@ bool remover_RN(PNO* raiz, TIPOCHAVE x){
         COR cor_no = auxno->cor;
         if(auxno->esq != externo && auxno->dir != externo) {
             auxmenor = menor_descendente_direito(auxno);
+            cor_no = auxmenor->cor;
             auxno->chave = auxmenor->chave;
             auxpai = auxmenor->pai;
             auxraiz = auxpai;
